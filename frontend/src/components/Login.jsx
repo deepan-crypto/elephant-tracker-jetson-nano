@@ -49,11 +49,12 @@ export default function Login({ onLoginSuccess }) {
 
             <div className="bg-black/40 backdrop-blur-xl border border-zinc-800 p-8 rounded-2xl shadow-2xl w-full max-w-md relative z-10">
                 <div className="text-center mb-8">
-                    <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10 p-4">
-                        <img src={logo} alt="EleTrack AI Logo" className="w-full h-full object-contain" />
+                    <div className="w-28 h-28 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/20 p-3 shadow-lg">
+                        <img src={logo} alt="Indian Forest Service Logo" className="w-full h-full object-contain" />
                     </div>
                     <h1 className="text-2xl font-bold text-white tracking-tight">EleTrack AI Portal</h1>
                     <p className="text-zinc-500 text-sm mt-2">Elephant Detection & Warning System</p>
+                    <p className="text-emerald-500/70 text-xs mt-1 font-mono">Indian Forest Service</p>
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-4">

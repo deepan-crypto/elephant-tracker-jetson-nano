@@ -6,7 +6,9 @@ export default function Sidebar({ activeView, setActiveView }) {
     return (
         <div className="w-64 bg-zinc-950 border-r border-zinc-800 flex flex-col h-screen fixed left-0 top-0 z-10 text-zinc-100 shadow-xl shadow-black/50">
             <div className="p-6 border-b border-zinc-800 flex items-center gap-3 bg-zinc-950/50 backdrop-blur-sm">
-                <img src={logo} alt="EleTrack AI Logo" className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]" />
+                <div className="w-12 h-12 bg-white rounded-lg p-1.5 shadow-md">
+                    <img src={logo} alt="Indian Forest Service Logo" className="w-full h-full object-contain" />
+                </div>
                 <div>
                     <h1 className="font-bold text-lg tracking-tight bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">EleTrack AI</h1>
                     <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">Wildlife Safety</p>

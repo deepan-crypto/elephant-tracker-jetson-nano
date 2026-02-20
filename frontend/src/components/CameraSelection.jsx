@@ -37,10 +37,12 @@ export default function CameraSelection({ onCameraSelect }) {
             <div className="w-64 bg-zinc-900/80 backdrop-blur-md border-r border-zinc-800 flex flex-col z-20">
                 <div className="p-6 border-b border-zinc-800">
                     <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-3">
-                        <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
+                        <div className="w-10 h-10 bg-white rounded-lg p-1 shadow-md">
+                            <img src={logo} alt="Indian Forest Service Logo" className="w-full h-full object-contain" />
+                        </div>
                         EleTrack AI
                     </h2>
-                    <p className="text-zinc-500 text-xs mt-1 ml-11">Wildlife Safety Portal</p>
+                    <p className="text-zinc-500 text-xs mt-1 ml-14">Wildlife Safety Portal</p>
                 </div>
 
                 <nav className="flex-1 p-4 space-y-2">
