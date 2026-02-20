@@ -1,5 +1,5 @@
 """
-Rail Rakshak Backend Integration Module
+EleTrack AI Backend Integration Module
 Drop this module into your Jetson project and import it in your detection script.
 
 Usage:
@@ -11,7 +11,7 @@ Usage:
     uploader.wake_backend()
 
     # In your inference loop — call send() on EVERY frame.
-    # Frames are sent continuously whether or not a pothole/crack is detected.
+    # Frames are sent continuously whether or not an elephant is detected.
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
@@ -31,11 +31,11 @@ import time
 
 class TelemetryUploader:
     """
-    Streams YOLOv5 frames to the Rail Rakshak backend in real-time.
+    Streams YOLOv5 frames to the EleTrack AI backend in real-time.
 
     Frames are sent CONTINUOUSLY — every frame regardless of whether
-    a hazard is detected.  The backend and frontend will show the live
-    video feed at all times; bounding boxes appear only when hazards exist.
+    an elephant is detected.  The backend and frontend will show the live
+    video feed at all times; bounding boxes appear only when elephants exist.
     """
 
     def __init__(self,
@@ -210,8 +210,8 @@ class TelemetryUploader:
         """
         Send the current camera frame + any detections to the backend.
 
-        Call this on EVERY frame — not just when a pothole is detected.
-        When there are no hazards, 'hazards' is sent as an empty list []
+        Call this on EVERY frame — not just when an elephant is detected.
+        When there are no detections, 'hazards' is sent as an empty list []
         so the frontend still displays the live video feed.
 
         Args:
@@ -278,7 +278,7 @@ def create_uploader(backend_url="https://your-backend.onrender.com/api/telemetry
     Quick setup function.
 
     Example:
-        uploader = create_uploader("https://rail-rakshak-backend.onrender.com/api/telemetry")
+        uploader = create_uploader("https://eletrack-ai-backend.onrender.com/api/telemetry")
         uploader.wake_backend()   # Always call this first!
     """
     return TelemetryUploader(backend_url=backend_url,

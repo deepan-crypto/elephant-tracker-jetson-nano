@@ -14,8 +14,8 @@ function App() {
 
   // Auto-login on mount
   React.useEffect(() => {
-    const token = localStorage.getItem('railRakshakToken');
-    const role = localStorage.getItem('railRakshakRole');
+    const token = localStorage.getItem('eleTrackToken');
+    const role = localStorage.getItem('eleTrackRole');
     if (token && role) {
       setIsAuthenticated(true);
       setCurrentUser(role);
@@ -28,8 +28,8 @@ function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('railRakshakToken');
-    localStorage.removeItem('railRakshakRole');
+    localStorage.removeItem('eleTrackToken');
+    localStorage.removeItem('eleTrackRole');
     setIsAuthenticated(false);
     setCurrentUser(null);
     setSelectedCamera(null);

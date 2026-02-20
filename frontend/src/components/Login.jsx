@@ -26,8 +26,8 @@ export default function Login({ onLoginSuccess }) {
             const data = await response.json();
 
             if (data.success) {
-                localStorage.setItem('railRakshakToken', data.token);
-                localStorage.setItem('railRakshakRole', data.role);
+                localStorage.setItem('eleTrackToken', data.token);
+                localStorage.setItem('eleTrackRole', data.role);
                 onLoginSuccess(data.role);
             } else {
                 setError(data.message || 'Invalid credentials');
@@ -44,16 +44,16 @@ export default function Login({ onLoginSuccess }) {
     return (
         <div className="min-h-screen bg-zinc-950 flex items-center justify-center relative overflow-hidden">
             {/* Background Elements */}
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1474487548417-781cb71495f3?q=80&w=2084&auto=format&fit=crop')] bg-cover bg-center opacity-10"></div>
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1564760055775-d63b17a55c44?q=80&w=2077&auto=format&fit=crop')] bg-cover bg-center opacity-10"></div>
             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent"></div>
 
             <div className="bg-black/40 backdrop-blur-xl border border-zinc-800 p-8 rounded-2xl shadow-2xl w-full max-w-md relative z-10">
                 <div className="text-center mb-8">
                     <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10 p-4">
-                        <img src={logo} alt="Rail-Rakshak Logo" className="w-full h-full object-contain" />
+                        <img src={logo} alt="EleTrack AI Logo" className="w-full h-full object-contain" />
                     </div>
-                    <h1 className="text-2xl font-bold text-white tracking-tight">Rail-Rakshak Portal</h1>
-                    <p className="text-zinc-500 text-sm mt-2">Secure Access Gateway</p>
+                    <h1 className="text-2xl font-bold text-white tracking-tight">EleTrack AI Portal</h1>
+                    <p className="text-zinc-500 text-sm mt-2">Elephant Detection & Warning System</p>
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-4">

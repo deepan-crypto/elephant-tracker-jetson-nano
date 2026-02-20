@@ -52,7 +52,7 @@ app.get('/api/ping', (_req, res) => {
 });
 
 // Sanitize MONGO_URI — strip empty query params like &appName= that Atlas sometimes includes
-const rawMongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/rail-rakshak';
+const rawMongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/eletrack-ai';
 const MONGO_URI = rawMongoUri.replace(/([&?])[^=&]+=[&$]/g, '$1').replace(/[?&]$/, '');
 
 // MongoDB Connection
@@ -74,8 +74,8 @@ const LoginLog = mongoose.model('LoginLog', LoginLogSchema);
 // Hardcoded Credentials
 const CREDENTIALS = {
     'admin': 'admin123',
-    'controller': 'railsafe2024',
-    'supervisor': 'track_secure',
+    'controller': 'eletrack2026',
+    'supervisor': 'wildlife_secure',
     'analyst': 'data_insight',
     'guest': 'view_only'
 };
@@ -166,9 +166,9 @@ app.post('/api/telemetry', async (req, res) => {
             });
         }
 
-        console.log(`\n📹 [TELEMETRY RECEIVED] Time: ${timestamp} | Hazards: ${hazards.length}`);
+        console.log(`\n📹 [TELEMETRY RECEIVED] Time: ${timestamp} | Elephants Detected: ${hazards.length}`);
         for (const hazard of hazards) {
-            console.log(`   ⚠️  ${hazard.name} (Confidence: ${(hazard.confidence * 100).toFixed(2)}%)`);
+            console.log(`   🐘 ${hazard.name} (Confidence: ${(hazard.confidence * 100).toFixed(2)}%)`);
         }
 
         // Save to MongoDB for historical tracking
@@ -261,7 +261,7 @@ io.on('connection', (socket) => {
 // ==================== SERVER STARTUP ====================
 
 httpServer.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`� EleTrack AI Server running on http://localhost:${PORT}`);
     console.log(`🔒 JWT Authentication Enabled`);
     console.log(`📡 WebSocket (Socket.io) Server running on ws://localhost:${PORT}`);
     console.log(`📸 Telemetry endpoint: POST /api/telemetry`);

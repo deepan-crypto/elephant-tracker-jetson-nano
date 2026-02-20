@@ -1,9 +1,9 @@
 """
-jetson_detection.py — Rail Rakshak Live Detection Script
-Run this on the Jetson Nano Orin to start streaming.
+jetson_detection.py — EleTrack AI Live Detection Script
+Run this on the Jetson Orin Nano to start streaming.
 
-This script streams EVERY camera frame to the backend (whether or not a
-pothole/crack is detected), so the dashboard always shows a live feed.
+This script streams EVERY camera frame to the backend (whether or not an
+elephant is detected), so the dashboard always shows a live feed.
 
 Usage:
     python3 jetson_detection.py
@@ -15,14 +15,16 @@ Requirements:
 
 import cv2
 import torch
+import sys
+sys.path.append('../backend')  # Add backend folder to path for import
 from rail_rakshak_uploader import TelemetryUploader
 
 # ─── CONFIGURATION ───────────────────────────────────────────────────────────
-BACKEND_URL  = "https://your-backend.onrender.com/api/telemetry"  # ← your Render URL
-MODEL_PATH   = "best.pt"          # Path to your trained YOLOv5 weights
+BACKEND_URL  = "http://localhost:5000/api/telemetry"  # Local dev server (change for production)
+MODEL_PATH   = "best.pt"          # Path to your trained YOLOv5 weights (elephant model)
 CAMERA_INDEX = 0                  # 0 = first camera (CSI or USB)
-GPS_LAT      = 28.6139            # ← Your GPS latitude
-GPS_LON      = 77.2090            # ← Your GPS longitude
+GPS_LAT      = 12.2958            # Mudumalai Wildlife Sanctuary coordinates
+GPS_LON      = 76.6394
 SEND_EVERY_N = 1                  # 1 = stream every frame; 2 = every 2nd frame, etc.
 JPEG_QUALITY = 65                 # Lower = smaller payload, less bandwidth used
 # ─────────────────────────────────────────────────────────────────────────────
@@ -30,7 +32,7 @@ JPEG_QUALITY = 65                 # Lower = smaller payload, less bandwidth used
 
 def main():
     # Step 1: Load YOLOv5 model
-    print("🔍 Loading YOLOv5 model...")
+    print("� Loading YOLOv5 Elephant Detection model...")
     model = torch.hub.load('ultralytics/yolov5', 'custom',
                            path=MODEL_PATH, force_reload=False)
     model.conf = 0.4   # Confidence threshold — adjust as needed
@@ -76,7 +78,7 @@ def main():
 
             # Optional: show local preview with bounding boxes
             annotated = results.render()[0]       # frame with boxes drawn
-            cv2.imshow("Rail Rakshak - Jetson Live Feed", annotated)
+            cv2.imshow("EleTrack AI - Jetson Live Feed", annotated)
 
             # Quit on Q key
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -89,7 +91,7 @@ def main():
         cap.release()
         cv2.destroyAllWindows()
         uploader.print_stats()
-        print("✅ Detection script stopped.")
+        print("✅ Elephant detection script stopped.")
 
 
 if __name__ == "__main__":

@@ -20,10 +20,10 @@ export default function CameraSelection({ onCameraSelect }) {
     });
 
     const cameras = [
-        { id: 'CAM_01', location: 'Locomotive Front', status: 'LIVE', signal: 92, type: 'Main Feed' },
-        { id: 'CAM_02', location: 'Under-Carriage Left', status: 'LIVE', signal: 88, type: 'Thermal' },
-        { id: 'CAM_03', location: 'Under-Carriage Right', status: 'LIVE', signal: 87, type: 'Thermal' },
-        { id: 'CAM_04', location: 'Rear View', status: 'OFFLINE', signal: 0, type: 'Backup' },
+        { id: 'CAM_01', location: 'Railway Crossing Point A', status: 'LIVE', signal: 92, type: 'Main Feed' },
+        { id: 'CAM_02', location: 'Forest Edge - Section B', status: 'LIVE', signal: 88, type: 'Thermal' },
+        { id: 'CAM_03', location: 'Water Source - Zone C', status: 'LIVE', signal: 87, type: 'Thermal' },
+        { id: 'CAM_04', location: 'Corridor Exit Point', status: 'OFFLINE', signal: 0, type: 'Backup' },
     ];
 
 
@@ -38,9 +38,9 @@ export default function CameraSelection({ onCameraSelect }) {
                 <div className="p-6 border-b border-zinc-800">
                     <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-3">
                         <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
-                        Rail-Rakshak
+                        EleTrack AI
                     </h2>
-                    <p className="text-zinc-500 text-xs mt-1 ml-11">Surveillance Portal</p>
+                    <p className="text-zinc-500 text-xs mt-1 ml-11">Wildlife Safety Portal</p>
                 </div>
 
                 <nav className="flex-1 p-4 space-y-2">
@@ -148,17 +148,17 @@ export default function CameraSelection({ onCameraSelect }) {
                 {activeTab === 'about' && (
                     <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="mb-8 border-b border-zinc-800 pb-6">
-                            <h1 className="text-3xl font-bold mb-2 text-indigo-400">About Rail-Rakshak</h1>
-                            <p className="text-zinc-400 text-lg">AI-Powered Railway Safety & Maintenance System</p>
+                            <h1 className="text-3xl font-bold mb-2 text-indigo-400">About EleTrack AI</h1>
+                            <p className="text-zinc-400 text-lg">AI-Powered Elephant Detection & Railway Safety System</p>
                         </div>
 
                         <div className="space-y-8">
                             <div className="bg-zinc-900/50 border border-zinc-800 p-6 rounded-xl">
                                 <h3 className="text-xl font-bold mb-4 text-white">Project Overview</h3>
                                 <p className="text-zinc-400 leading-relaxed">
-                                    Rail-Rakshak is a cutting-edge Edge AI solution designed to revolutionize railway track maintenance in India.
-                                    By leveraging high-speed cameras and NVIDIA Jetson Edge devices, the system performs real-time automated visual inspection of railway tracks,
-                                    identifying critical faults such as rail fractures, missing fasteners, and ballast deficiency with over 98% accuracy.
+                                    EleTrack AI is a real-time elephant detection and warning system that uses YOLOv5 and edge AI to prevent elephant-train collisions.
+                                    The system analyzes live video streams from edge devices to accurately detect elephants near railway tracks.
+                                    When an elephant is detected, it automatically triggers sound alerts to scare the animals away, protecting both wildlife and railway operations.
                                 </p>
                             </div>
 
@@ -167,22 +167,22 @@ export default function CameraSelection({ onCameraSelect }) {
                                     <div className="w-10 h-10 bg-emerald-500/20 text-emerald-400 rounded-lg flex items-center justify-center mb-4">
                                         <Video className="w-6 h-6" />
                                     </div>
-                                    <h4 className="font-bold mb-2">Real-Time Vision</h4>
-                                    <p className="text-sm text-zinc-500">Processes video feeds at 60FPS to detect minute structural defects instantly.</p>
+                                    <h4 className="font-bold mb-2">Real-Time Detection</h4>
+                                    <p className="text-sm text-zinc-500">Detects elephants in real-time using deep learning with YOLOv5 on edge devices.</p>
                                 </div>
                                 <div className="bg-zinc-900/50 border border-zinc-800 p-5 rounded-xl">
                                     <div className="w-10 h-10 bg-indigo-500/20 text-indigo-400 rounded-lg flex items-center justify-center mb-4">
                                         <Signal className="w-6 h-6" />
                                     </div>
-                                    <h4 className="font-bold mb-2">GPS Tagging</h4>
-                                    <p className="text-sm text-zinc-500">Geo-tags every defect for precise location tracking and rapid maintenance crew deployment.</p>
+                                    <h4 className="font-bold mb-2">Sound Alert System</h4>
+                                    <p className="text-sm text-zinc-500">Triggers warning sounds to repel elephants from railway tracks when detected.</p>
                                 </div>
                                 <div className="bg-zinc-900/50 border border-zinc-800 p-5 rounded-xl">
                                     <div className="w-10 h-10 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center mb-4">
                                         <Globe className="w-6 h-6" />
                                     </div>
-                                    <h4 className="font-bold mb-2">IRPSM Integration</h4>
-                                    <p className="text-sm text-zinc-500">Seamlessly pushes defects to the Indian Railways Project Sanctions Management portal.</p>
+                                    <h4 className="font-bold mb-2">Wildlife Conservation</h4>
+                                    <p className="text-sm text-zinc-500">Uses AI and IoT for smart wildlife conservation and railway safety applications.</p>
                                 </div>
                             </div>
 
@@ -223,8 +223,8 @@ export default function CameraSelection({ onCameraSelect }) {
                     <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 h-full flex flex-col">
                         <div className="mb-6 border-b border-zinc-800 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
-                                <h1 className="text-3xl font-bold mb-2 text-blue-400">Emergency & General Contacts</h1>
-                                <p className="text-zinc-400">Comprehensive Directory of Railway Officials</p>
+                                <h1 className="text-3xl font-bold mb-2 text-blue-400">Emergency & Wildlife Contacts</h1>
+                                <p className="text-zinc-400">Directory of Forest & Wildlife Officials</p>
                             </div>
 
                             {/* Search & Filter Controls */}
@@ -287,8 +287,8 @@ export default function CameraSelection({ onCameraSelect }) {
                         <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-start gap-3 shrink-0">
                             <Info className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
                             <div>
-                                <h4 className="text-amber-500 font-bold text-sm mb-1">National Emergency Helpline</h4>
-                                <p className="text-zinc-400 text-xs">For immediate assistance regarding rail accidents or safety hazards, please dial <span className="text-white font-bold">139</span> (Rail Madad) available 24/7 across all states.</p>
+                                <h4 className="text-amber-500 font-bold text-sm mb-1">Wildlife Emergency Helpline</h4>
+                                <p className="text-zinc-400 text-xs">For immediate assistance regarding elephant sightings or wildlife emergencies, please dial <span className="text-white font-bold">1926</span> (Forest Helpline) available 24/7 across all states.</p>
                             </div>
                         </div>
                     </div>

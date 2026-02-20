@@ -1,5 +1,5 @@
 """
-demo_laptop_webcam.py — Rail Rakshak Live Feed Demo (Laptop Webcam)
+demo_laptop_webcam.py — EleTrack AI Live Feed Demo (Laptop Webcam)
 ===================================================================
 Fully self-contained demo — no YOLOv5, no PyTorch, no TelemetryUploader needed.
 Just OpenCV + requests.
@@ -14,7 +14,7 @@ What it does:
   1. Wakes the Render backend (handles Render free-tier cold-start delay)
   2. Opens your laptop webcam (camera index 0)
   3. Sends every Nth frame as a base64 JPEG to your backend
-  4. Simulates a fake "Pothole" detection every 5 seconds
+  4. Simulates a fake "Elephant" detection every 5 seconds
   5. Shows a local preview window — press Q to quit
 """
 
@@ -27,10 +27,10 @@ import requests
 from datetime import datetime
 
 # ─── CONFIG — ONLY EDIT THESE ────────────────────────────────────────────────
-BACKEND_URL  = "https://your-backend.onrender.com/api/telemetry"  # ← REPLACE THIS
+BACKEND_URL  = "http://localhost:5000/api/telemetry"  # Local development server
 HEALTH_URL   = BACKEND_URL.replace("/api/telemetry", "/health")
-GPS_LAT      = 28.6139   # fake GPS (change if you like)
-GPS_LON      = 77.2090
+GPS_LAT      = 12.2958   # Mudumalai Wildlife Sanctuary coordinates
+GPS_LON      = 76.6394
 CAMERA_INDEX = 0         # 0 = built-in webcam; try 1 if it doesn't open
 SEND_EVERY_N = 2         # send every 2nd frame (saves bandwidth on wifi)
 JPEG_QUALITY = 60        # 0-100, lower = smaller payload
@@ -89,7 +89,7 @@ def send_frame(frame, hazards=None):
 
 def main():
     print("=" * 55)
-    print("  Rail Rakshak — Laptop Webcam Demo")
+    print("  EleTrack AI — Laptop Webcam Demo")
     print("=" * 55)
 
     if "your-backend" in BACKEND_URL:
@@ -116,7 +116,7 @@ def main():
     frame_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     print(f"✅ Webcam opened: {frame_w}×{frame_h}")
     print("\n🚀 Streaming started. Open your Vercel dashboard and log in.")
-    print("   Fake pothole fires every 5 seconds to test alerts.")
+    print("   Fake elephant detection fires every 5 seconds to test alerts.")
     print("   Press  Q  in the preview window to quit.\n")
 
     frame_count  = 0
@@ -142,7 +142,7 @@ def main():
                 w, h   = 200, 120
                 hazards = [{
                     "class":      0,
-                    "name":       "Pothole",
+                    "name":       "Elephant",
                     "confidence": 0.91,
                     "xmin": cx - w // 2,
                     "ymin": cy - h // 2,
@@ -167,7 +167,7 @@ def main():
                               (h_["xmin"], h_["ymin"]),
                               (h_["xmax"], h_["ymax"]),
                               (0, 0, 255), 2)
-                cv2.putText(display, "POTHOLE 91%",
+                cv2.putText(display, "ELEPHANT 91%",
                             (h_["xmin"], h_["ymin"] - 8),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 255), 2)
 
@@ -180,7 +180,7 @@ def main():
             dot_color = (0, 0, 255) if fake_active else (0, 220, 0)
             cv2.circle(display, (frame_w - 16, 14), 7, dot_color, -1)
 
-            cv2.imshow("Rail Rakshak — Webcam Demo (Q to quit)", display)
+            cv2.imshow("EleTrack AI — Webcam Demo (Q to quit)", display)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 

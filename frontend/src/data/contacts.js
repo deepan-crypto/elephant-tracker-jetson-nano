@@ -1,144 +1,105 @@
-export const railwayContacts = [
-    // --- SOUTHERN RAILWAY (HQ) ---
-    { category: 'Southern Rly (HQ)', designation: 'General Manager', name: 'John Thomas', contact: '25354854 / 9003160000' },
-    { category: 'Southern Rly (HQ)', designation: 'AGM', name: 'S. Anantharaman', contact: '25354273 / 9003160001' },
-    { category: 'Southern Rly (HQ)', designation: 'CPRO', name: 'B. Gugananesan', contact: '9003160005' },
-    { category: 'Southern Rly (HQ)', designation: 'Secy. to GM', name: 'Manisha Chatterjee', contact: '9003160003' },
-    { category: 'Southern Rly (HQ)', designation: 'DGM/G', name: 'Selvam, C.', contact: '9003160004' },
-    { category: 'Southern Rly (HQ)', designation: 'SDGM & CVO', name: 'Deepak Krishan', contact: '9003160002' },
+export const wildlifeContacts = [
+    // --- MINISTRY OF ENVIRONMENT, FORESTS & CLIMATE CHANGE ---
+    { category: 'MoEFCC (HQ)', designation: 'Secretary', name: 'Dr. S. P. Singh Parihar', contact: '011-24695136' },
+    { category: 'MoEFCC (HQ)', designation: 'Additional Secretary', name: 'Shri Naresh Pal Gangwar', contact: '011-24695266' },
+    { category: 'MoEFCC (HQ)', designation: 'Director General (Forests)', name: 'Shri C.P. Goyal', contact: '011-24695223' },
+    { category: 'MoEFCC (HQ)', designation: 'Inspector General (Wildlife)', name: 'Dr. Soumitra Dasgupta', contact: '011-24695276' },
 
-    // Accounts (HQ)
-    { category: 'Southern Rly (Accounts)', designation: 'FA & CAO', name: 'Raghuraman, S.', contact: '28273434' },
-    { category: 'Southern Rly (Accounts)', designation: 'FA & CAO/G', name: 'Selvaraj, A.', contact: '28270926' },
+    // --- WILDLIFE INSTITUTE OF INDIA ---
+    { category: 'WII Dehradun', designation: 'Director', name: 'Dr. Dhananjai Mohan', contact: '0135-2640111' },
+    { category: 'WII Dehradun', designation: 'Dean', name: 'Dr. K. Ramesh', contact: '0135-2640112' },
+    { category: 'WII Dehradun', designation: 'Scientist (Elephant)', name: 'Dr. Abishek Harihar', contact: '0135-2640115' },
 
-    // Electrical (HQ)
-    { category: 'Southern Rly (Electrical)', designation: 'CEE', name: 'Gupta N.K', contact: '9003160300' },
-    { category: 'Southern Rly (Electrical)', designation: 'CESE', name: 'Vijayakumar, M.', contact: '9003160301' },
+    // --- PROJECT ELEPHANT (GOVT OF INDIA) ---
+    { category: 'Project Elephant', designation: 'Project Director', name: 'Shri R. K. Srivastava', contact: '011-24695301' },
+    { category: 'Project Elephant', designation: 'Deputy Director', name: 'Dr. Anup Kumar Nayak', contact: '011-24695302' },
+    { category: 'Project Elephant', designation: 'Technical Officer', name: 'Shri Manoj Kumar', contact: '011-24695303' },
 
-    // Engineering (HQ)
-    { category: 'Southern Rly (Engineering)', designation: 'PCE', name: 'Desh Ratan Gupta', contact: '9003160200' },
-    { category: 'Southern Rly (Engineering)', designation: 'CPDE', name: 'Sinha A.K', contact: '9003160203' },
-    { category: 'Southern Rly (Engineering)', designation: 'CGE', name: 'Shyam Sundar, D R', contact: '9003060204' },
+    // --- TAMIL NADU FOREST DEPARTMENT ---
+    { category: 'Tamil Nadu Forest', designation: 'Principal Chief Conservator', name: 'Shri Shekhar Kumar Niraj', contact: '044-24321731' },
+    { category: 'Tamil Nadu Forest', designation: 'Chief Wildlife Warden', name: 'Shri K. K. Kaushal', contact: '044-24321732' },
+    { category: 'Tamil Nadu Forest', designation: 'Conservator (Coimbatore)', name: 'Shri I. Anwardeen', contact: '0422-2220001' },
+    { category: 'Tamil Nadu Forest', designation: 'DFO Nilgiris', name: 'Shri Kommu Omkaram', contact: '0423-2444266' },
+    { category: 'Tamil Nadu Forest', designation: 'Range Officer (Mudumalai)', name: 'Shri S. Rajkumar', contact: '0423-2526235' },
 
-    // Mechanical (HQ)
-    { category: 'Southern Rly (Mechanical)', designation: 'CME', name: 'Sood, S.K.', contact: '9003060400' },
-    { category: 'Southern Rly (Mechanical)', designation: 'CWE', name: 'Agarwal, A.K.', contact: '9003060403' },
+    // --- KERALA FOREST DEPARTMENT ---
+    { category: 'Kerala Forest', designation: 'Principal Chief Conservator', name: 'Shri P. K. Kesavan', contact: '0471-2322217' },
+    { category: 'Kerala Forest', designation: 'Chief Wildlife Warden', name: 'Dr. A. Santhakumar', contact: '0471-2529106' },
+    { category: 'Kerala Forest', designation: 'Conservator (Palakkad)', name: 'Shri N. T. Sajan', contact: '0491-2505230' },
+    { category: 'Kerala Forest', designation: 'DFO Wayanad', name: 'Shri K. A. Najeeb', contact: '04936-202027' },
+    { category: 'Kerala Forest', designation: 'Range Officer (Sulthan Bathery)', name: 'Shri M. Raveendran', contact: '04936-220286' },
 
-    // Medical (HQ)
-    { category: 'Southern Rly (Medical)', designation: 'CMD', name: 'Vijayakumar, Dr. S.', contact: '9003160500' },
-    { category: 'Southern Rly (Medical)', designation: 'Medical Director', name: 'Kannan, Dr. N.', contact: '9003160500' },
+    // --- KARNATAKA FOREST DEPARTMENT ---
+    { category: 'Karnataka Forest', designation: 'Principal Chief Conservator', name: 'Shri Sanjay Mohan', contact: '080-22864500' },
+    { category: 'Karnataka Forest', designation: 'Chief Wildlife Warden', name: 'Shri Vijay K. Gogi', contact: '080-22864510' },
+    { category: 'Karnataka Forest', designation: 'Conservator (Mysuru)', name: 'Shri Malathi Priya', contact: '0821-2480901' },
+    { category: 'Karnataka Forest', designation: 'DFO Chamarajanagar', name: 'Shri D. Mahesh Kumar', contact: '08226-222321' },
+    { category: 'Karnataka Forest', designation: 'Range Officer (Bandipur)', name: 'Shri T. Balachandra', contact: '08229-236041' },
 
-    // Operating (HQ)
-    { category: 'Southern Rly (Operating)', designation: 'COM', name: 'Mohan', contact: '9003160900' },
-    { category: 'Southern Rly (Operating)', designation: 'CFTM', name: 'Raveendran, P.', contact: '9003160901' },
+    // --- ASSAM FOREST DEPARTMENT ---
+    { category: 'Assam Forest', designation: 'Principal Chief Conservator', name: 'Shri M. K. Yadava', contact: '0361-2260330' },
+    { category: 'Assam Forest', designation: 'Chief Wildlife Warden', name: 'Shri P. Sivakumar', contact: '0361-2261648' },
+    { category: 'Assam Forest', designation: 'Conservator (Nagaon)', name: 'Shri Ranjit Konwar', contact: '03672-222234' },
+    { category: 'Assam Forest', designation: 'DFO Kaziranga', name: 'Shri P. Shiva Kumar', contact: '03776-268095' },
+    { category: 'Assam Forest', designation: 'Range Officer (Kohora)', name: 'Shri Biren Deka', contact: '03776-268086' },
 
-    // Personnel (HQ)
-    { category: 'Southern Rly (Personnel)', designation: 'CPO', name: 'Prasad, N.K.', contact: '9003160600' },
+    // --- WEST BENGAL FOREST DEPARTMENT ---
+    { category: 'West Bengal Forest', designation: 'Principal Chief Conservator', name: 'Shri Ravikant Sinha', contact: '033-22141949' },
+    { category: 'West Bengal Forest', designation: 'Chief Wildlife Warden', name: 'Shri Debal Roy', contact: '033-22486271' },
+    { category: 'West Bengal Forest', designation: 'Conservator (Jalpaiguri)', name: 'Shri Kumar Vimal', contact: '03561-225370' },
+    { category: 'West Bengal Forest', designation: 'DFO Jaldapara', name: 'Shri Biswajit Roy Chowdhury', contact: '03563-266239' },
 
-    // Security (HQ)
-    { category: 'Southern Rly (Security)', designation: 'IG/CSC', name: 'Dhaka, V. K., I.P.S', contact: '9003160700' },
+    // --- JHARKHAND FOREST DEPARTMENT ---
+    { category: 'Jharkhand Forest', designation: 'Principal Chief Conservator', name: 'Shri L. R. Singh', contact: '0651-2490011' },
+    { category: 'Jharkhand Forest', designation: 'Chief Wildlife Warden', name: 'Shri P. K. Verma', contact: '0651-2490012' },
+    { category: 'Jharkhand Forest', designation: 'DFO Dalma', name: 'Shri Abhishek Kumar', contact: '0657-2290567' },
 
-    // S&T (HQ)
-    { category: 'Southern Rly (S&T)', designation: 'CSTE', name: 'Manohar, S.', contact: '9003160800' },
+    // --- ODISHA FOREST DEPARTMENT ---
+    { category: 'Odisha Forest', designation: 'Principal Chief Conservator', name: 'Shri Susanta Nanda', contact: '0674-2536636' },
+    { category: 'Odisha Forest', designation: 'Chief Wildlife Warden', name: 'Shri H. S. Upadhyay', contact: '0674-2536640' },
+    { category: 'Odisha Forest', designation: 'DFO Simlipal', name: 'Shri M. Jogesh', contact: '06792-253068' },
 
-    // --- CHENNAI DIVISION ---
-    { category: 'Chennai Division', designation: 'DRM', name: 'Ganesh', contact: '044-25355900' },
-    { category: 'Chennai Division', designation: 'ADRM/I', name: 'Anantharaman, S.', contact: '9003061001' },
-    { category: 'Chennai Division', designation: 'Sr. DCM', name: 'Lenin, V R', contact: '9003061950' },
-    { category: 'Chennai Division', designation: 'Sr. DEE/RS/TBM', name: 'Dhana Sekaran, G.', contact: '9003161388' },
-    { category: 'Chennai Division', designation: 'Sr. DEN/Co-ord', name: 'Archunan, T.', contact: '9003161200' },
-    { category: 'Chennai Division', designation: 'Sr. DME', name: 'Balasundar, P.', contact: '9003161400' },
-    { category: 'Chennai Division', designation: 'CMS', name: 'Sulochana, A. Rajini', contact: '9003161500' },
-    { category: 'Chennai Division', designation: 'Sr. DOM', name: 'Balaji Arun Kumar. S', contact: '9003161900' },
-    { category: 'Chennai Division', designation: 'Sr. DPO', name: 'Narayanan, A.', contact: '9003161600' },
-    { category: 'Chennai Division', designation: 'Sr. DSC', name: 'Gandhi, S.R.', contact: '9003161700' },
-    { category: 'Chennai Division', designation: 'Sr. DSTE', name: 'Hari Om Kushwaha', contact: '9003161801' },
+    // --- CHHATTISGARH FOREST DEPARTMENT ---
+    { category: 'Chhattisgarh Forest', designation: 'Principal Chief Conservator', name: 'Shri Rakesh Chaturvedi', contact: '0771-2510291' },
+    { category: 'Chhattisgarh Forest', designation: 'Chief Wildlife Warden', name: 'Shri P. V. Narsimha Rao', contact: '0771-2510292' },
 
-    // --- PALGHAT DIVISION ---
-    { category: 'Palghat Division', designation: 'DRM', name: 'Trilok Kothari', contact: '0491-2555235' },
-    { category: 'Palghat Division', designation: 'CMS', name: 'Mahalingam, Dr. K.', contact: '0491-2555037' },
-    { category: 'Palghat Division', designation: 'Sr. DOM', name: 'Subramanian, S.', contact: '9746763900' },
-    { category: 'Palghat Division', designation: 'Sr. DSC', name: 'Ramanathan Karoth', contact: '9746763700' },
+    // --- UTTARAKHAND FOREST DEPARTMENT ---
+    { category: 'Uttarakhand Forest', designation: 'Principal Chief Conservator', name: 'Shri Vinod Kumar Singhal', contact: '0135-2655260' },
+    { category: 'Uttarakhand Forest', designation: 'Chief Wildlife Warden', name: 'Shri Parag Madhukar Dhakate', contact: '0135-2655261' },
+    { category: 'Uttarakhand Forest', designation: 'DFO Rajaji', name: 'Shri Akash Verma', contact: '01331-266401' },
+    { category: 'Uttarakhand Forest', designation: 'DFO Jim Corbett', name: 'Shri Dhiraj Pandey', contact: '05947-251489' },
 
-    // --- TRIVANDRUM DIVISION ---
-    { category: 'Trivandrum Division', designation: 'DRM', name: 'R. Mukund', contact: '0471-2320012' },
-    { category: 'Trivandrum Division', designation: 'ADRM', name: 'Rajiv Dutt Sharma', contact: '9746769001' },
-    { category: 'Trivandrum Division', designation: 'CMS', name: 'Mathur, Dr. V. N.', contact: '9746769500' },
-    { category: 'Trivandrum Division', designation: 'Sr. DSC', name: 'Ramachandran, T.', contact: '9746769700' },
+    // --- INDIAN RAILWAYS (WILDLIFE COORDINATION) ---
+    { category: 'Indian Railways', designation: 'Director (Env & HG)', name: 'Shri Manoj Kumar Sharma', contact: '011-23387120' },
+    { category: 'Indian Railways', designation: 'Executive Director (Safety)', name: 'Shri V. K. Tripathi', contact: '011-23382200' },
+    { category: 'Indian Railways', designation: 'Chief Safety Officer (SR)', name: 'Shri T. Balakrishnan', contact: '044-28273456' },
+    { category: 'Indian Railways', designation: 'Chief Safety Officer (NFR)', name: 'Shri R. Mohanty', contact: '0361-2731222' },
 
-    // --- TRICHY DIVISION ---
-    { category: 'Trichy Division', designation: 'DRM', name: 'Manish Agarwal', contact: '0431-2411204' },
-    { category: 'Trichy Division', designation: 'ADRM', name: 'Selvaraj, M', contact: '9003864001' },
-    { category: 'Trichy Division', designation: 'CMS', name: 'Velusamy, P, Dr.', contact: '9003864500' },
-
-    // --- MADURAI DIVISION ---
-    { category: 'Madurai Division', designation: 'DRM', name: 'Goel, A.K', contact: '0452-2308000' },
-    { category: 'Madurai Division', designation: 'ADRM', name: 'Venkatasubramanian', contact: '9003862001' },
-    { category: 'Madurai Division', designation: 'CMS', name: 'Kasturibai Jayaraj, Dr.', contact: '9003862500' },
-
-    // --- SALEM DIVISION ---
-    { category: 'Salem Division', designation: 'DRM', name: 'A.G. Srinivas', contact: '0427-2440030' },
-    { category: 'Salem Division', designation: 'CMS', name: 'Narasimham, Dr. M.', contact: '9003956500' },
-    { category: 'Salem Division', designation: 'Sr. DSC', name: 'Ramakrishnan, G', contact: '9003956700' },
-
-    // --- ALLAHABAD DIVISION (NCR) ---
-    { category: 'Allahabad Division', designation: 'DRM', name: 'Amitabh', contact: '0532-2407227 / 9794837000' },
-    { category: 'Allahabad Division', designation: 'ADRM/Op', name: 'Anurag Gupta', contact: '9794837001' },
-    { category: 'Allahabad Division', designation: 'ADRM/Infra', name: 'Anamul Haque', contact: '7497950002' },
-    { category: 'Allahabad Division', designation: 'ADRM/Gen', name: 'Anurag Agarwal', contact: '7497950003' },
-
-    // Allahabad Accounts
-    { category: 'Allahabad Division', designation: 'Sr. DFM', name: 'Ravi Patel', contact: '9794837100' },
-
-    // Allahabad Commercial
-    { category: 'Allahabad Division', designation: 'Sr. DCM-I', name: 'Anshoo Pandey', contact: '9794837950' },
-    { category: 'Allahabad Division', designation: 'Sr. DCM-II', name: 'Sachit Tyagi', contact: '9794837207' },
-    { category: 'Allahabad Division', designation: 'PRO', name: 'S.K. Gupta', contact: '9794837336' },
-
-    // Allahabad Engineering
-    { category: 'Allahabad Division', designation: 'Sr. DEN (Co-ord)', name: 'S K Gupta', contact: '9794837200' },
-    { category: 'Allahabad Division', designation: 'Sr. DEN (I)', name: 'Rajesh Kumar', contact: '9794837201' },
-
-    // Allahabad Electrical
-    { category: 'Allahabad Division', designation: 'Sr. DEE/TRD', name: 'Diwakar Kumar', contact: '9794837300' },
-    { category: 'Allahabad Division', designation: 'Sr. DEE/OP', name: 'Rahul Tripathi', contact: '9794837301' },
-
-    // Allahabad Medical
-    { category: 'Allahabad Division', designation: 'CMS', name: 'VACANT', contact: '9794837500' },
-    { category: 'Allahabad Division', designation: 'Sr. DMO/H&FW', name: 'Dr. Rakesh Nigam', contact: '9794837543' },
-
-    // Allahabad Operating
-    { category: 'Allahabad Division', designation: 'Sr. DOM/Co.', name: 'S.K. Shukla', contact: '9794837900' },
-
-    // Allahabad Personnel
-    { category: 'Allahabad Division', designation: 'Sr. DPO', name: 'Rajesh Kumar Sharma', contact: '9794837600' },
-
-    // Allahabad Security (RPF)
-    { category: 'Allahabad Division', designation: 'Sr. DSC/RPF', name: 'Manoj Kr Singh', contact: '9794837700' },
-    { category: 'Allahabad Division', designation: 'ASC/RPF', name: 'Jamjer Kr Kundal', contact: '9794837701' },
-
-    // Allahabad S&T
-    { category: 'Allahabad Division', designation: 'Sr. DSTE/Co.', name: 'Saurabh Srivastava', contact: '9794837800' },
-
-    // Allahabad GRP
-    { category: 'Allahabad Division', designation: 'IG/GRP', name: 'B.R. Meena', contact: '9454404413' },
-    { category: 'Allahabad Division', designation: 'SP/GRP', name: 'P.K. Mishra', contact: '0532-2624128' },
-
-    // --- UNIONS ---
-    { category: 'Unions', designation: 'Gen. Secy NCRES', name: 'R.P. Singh', contact: '9794835880' },
-    { category: 'Unions', designation: 'Div. Secy NCRES', name: 'Gobind Singh', contact: '9794866608' },
-    { category: 'Unions', designation: 'Div. Secy NCRMU', name: 'Shitla Pd. Srivastava', contact: '9794866608' }
+    // --- EMERGENCY SERVICES ---
+    { category: 'Emergency', designation: 'Forest Helpline', name: 'All India Forest Helpline', contact: '1926' },
+    { category: 'Emergency', designation: 'Wildlife Crime Helpline', name: 'WCCB', contact: '011-26182716' },
+    { category: 'Emergency', designation: 'Railway Emergency', name: 'Railway Helpline', contact: '139' },
+    { category: 'Emergency', designation: 'Police Emergency', name: 'Police Control Room', contact: '100' },
+    { category: 'Emergency', designation: 'Disaster Management', name: 'NDMA Helpline', contact: '1078' },
 ];
 
 export const contactCategories = [
     'All',
-    'Southern Rly (HQ)',
-    'Chennai Division',
-    'Palghat Division',
-    'Trivandrum Division',
-    'Trichy Division',
-    'Madurai Division',
-    'Salem Division',
-    'Allahabad Division',
-    'Unions'
+    'MoEFCC (HQ)',
+    'WII Dehradun',
+    'Project Elephant',
+    'Tamil Nadu Forest',
+    'Kerala Forest',
+    'Karnataka Forest',
+    'Assam Forest',
+    'West Bengal Forest',
+    'Jharkhand Forest',
+    'Odisha Forest',
+    'Chhattisgarh Forest',
+    'Uttarakhand Forest',
+    'Indian Railways',
+    'Emergency',
 ];
+
+// Backward compatibility alias
+export const railwayContacts = wildlifeContacts;

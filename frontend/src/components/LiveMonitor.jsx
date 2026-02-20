@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
-import { AlertTriangle, MapPin, Gauge, Send, ScanLine, WifiOff, Wifi } from 'lucide-react';
+import { AlertTriangle, MapPin, Gauge, Send, ScanLine, WifiOff, Wifi, Volume2 } from 'lucide-react';
+import { NotificationContainer, useNotifications } from './Notification';
 
 // Socket + API URL from env — falls back to localhost for dev
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
@@ -10,7 +11,10 @@ export default function LiveMonitor({ cameraId }) {
     const [connected, setConnected] = useState(false);
     const [telemetry, setTelemetry] = useState(null);
     const [alerts, setAlerts] = useState([]);
+    const [soundEnabled, setSoundEnabled] = useState(true);
     const socketRef = useRef(null);
+    const lastNotificationRef = useRef(null);
+    const { notifications, addNotification, dismissNotification } = useNotifications();
 
     useEffect(() => {
         // Connect to Socket.io backend
@@ -49,6 +53,21 @@ export default function LiveMonitor({ cameraId }) {
                     bbox: { xmin: h.xmin, ymin: h.ymin, xmax: h.xmax, ymax: h.ymax },
                 }));
                 setAlerts((prev) => [...newAlerts, ...prev].slice(0, 20)); // Keep last 20
+
+                // Trigger real-time notification for new elephant detections
+                const now = Date.now();
+                if (!lastNotificationRef.current || now - lastNotificationRef.current > 3000) {
+                    lastNotificationRef.current = now;
+                    const highestConfidence = Math.max(...data.hazards.map(h => h.confidence));
+                    const severity = highestConfidence > 0.85 ? 'high' : highestConfidence > 0.65 ? 'medium' : 'low';
+                    
+                    addNotification({
+                        severity,
+                        message: `${data.hazards.length} elephant${data.hazards.length > 1 ? 's' : ''} detected near railway track. Sound alert ${soundEnabled ? 'triggered' : 'disabled'}.`,
+                        confidence: `${(highestConfidence * 100).toFixed(1)}%`,
+                        soundTriggered: soundEnabled,
+                    });
+                }
             }
         });
 
@@ -67,7 +86,7 @@ export default function LiveMonitor({ cameraId }) {
             clearInterval(keepAlive);
             socket.disconnect();
         };
-    }, []);
+    }, [addNotification, soundEnabled]);
 
     const gps = telemetry?.gps_location;
     const hazards = telemetry?.hazards || [];
@@ -83,6 +102,12 @@ export default function LiveMonitor({ cameraId }) {
 
     return (
         <div className="p-8 h-[calc(100vh-4.5rem)] overflow-y-auto custom-scrollbar">
+            {/* Real-time Notification Toast Container */}
+            <NotificationContainer 
+                notifications={notifications} 
+                onDismiss={dismissNotification} 
+            />
+            
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 h-full">
 
                 {/* Main Video Feed Area */}
@@ -110,7 +135,7 @@ export default function LiveMonitor({ cameraId }) {
                                     <div className="text-zinc-600 flex flex-col items-center gap-4">
                                         <ScanLine className="w-16 h-16 opacity-50 animate-pulse" />
                                         <p className="text-sm font-mono opacity-70">
-                                            {connected ? 'Waiting for Jetson Nano feed…' : 'Connecting to server…'}
+                                            {connected ? 'Waiting for Jetson Orin Nano feed…' : 'Connecting to server…'}
                                         </p>
                                     </div>
                                 </div>
@@ -152,12 +177,24 @@ export default function LiveMonitor({ cameraId }) {
                                 {imageBase64 ? 'LIVE FEED' : 'NO SIGNAL'}
                             </div>
                             <div className="px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/5 text-xs font-mono text-zinc-300">
-                                {cameraId} • Jetson Nano
+                                {cameraId} • Jetson Orin Nano
                             </div>
                         </div>
 
-                        {/* WebSocket connection badge */}
-                        <div className="absolute top-6 right-6">
+                        {/* WebSocket connection badge + Sound Toggle */}
+                        <div className="absolute top-6 right-6 flex items-center gap-2">
+                            <button
+                                onClick={() => setSoundEnabled(!soundEnabled)}
+                                className={`px-3 py-1 rounded-full text-xs font-mono flex items-center gap-1.5 backdrop-blur-md border transition-all ${
+                                    soundEnabled 
+                                        ? 'bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/20' 
+                                        : 'bg-zinc-500/10 border-zinc-500/30 text-zinc-400 hover:bg-zinc-500/20'
+                                }`}
+                                title={soundEnabled ? 'Sound alerts ON' : 'Sound alerts OFF'}
+                            >
+                                <Volume2 className="w-3 h-3" />
+                                {soundEnabled ? 'SOUND ON' : 'SOUND OFF'}
+                            </button>
                             <div className={`px-3 py-1 rounded-full text-xs font-mono flex items-center gap-1.5 backdrop-blur-md border ${connected ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
                                 {connected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
                                 {connected ? 'WS CONNECTED' : 'DISCONNECTED'}
@@ -169,11 +206,11 @@ export default function LiveMonitor({ cameraId }) {
                         {/* Telemetry Panel */}
                         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-lg">
                             <h3 className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-6 flex items-center gap-2">
-                                <Gauge className="w-4 h-4 text-indigo-500" /> System Telemetry
+                                <Gauge className="w-4 h-4 text-indigo-500" /> Elephant Detection Telemetry
                             </h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="bg-zinc-950/50 p-5 rounded-xl border border-zinc-800/50 group hover:border-zinc-700 transition-all">
-                                    <span className="text-zinc-500 text-[10px] uppercase tracking-wider block mb-2 font-bold">Hazards Detected</span>
+                                    <span className="text-zinc-500 text-[10px] uppercase tracking-wider block mb-2 font-bold">Elephants Detected</span>
                                     <div className="text-3xl font-bold text-white font-mono flex items-end gap-2">
                                         {hazards.length}
                                         <span className="text-sm text-zinc-500 font-sans mb-1">active</span>
@@ -234,7 +271,7 @@ export default function LiveMonitor({ cameraId }) {
                             ) : (
                                 <div className="flex items-center justify-center h-32 text-zinc-600 text-sm flex-col gap-2">
                                     <ScanLine className="w-8 h-8 opacity-30" />
-                                    <span>{connected ? 'No hazards detected' : 'Not connected'}</span>
+                                    <span>{connected ? 'No elephants detected' : 'Not connected'}</span>
                                 </div>
                             )}
                         </div>
@@ -261,7 +298,7 @@ export default function LiveMonitor({ cameraId }) {
                                 <Wifi className="w-8 h-8 opacity-30" />
                                 <span className="text-center font-mono text-xs leading-relaxed">
                                     {connected
-                                        ? 'Monitoring track...\nNo alerts yet.'
+                                        ? 'Monitoring area...\nNo alerts yet.'
                                         : 'Connecting to backend...'}
                                 </span>
                             </div>
@@ -297,7 +334,7 @@ export default function LiveMonitor({ cameraId }) {
                                             </span>
                                         </span>
                                         <button className="text-[10px] bg-zinc-800 hover:bg-indigo-600 hover:border-indigo-500 text-zinc-400 hover:text-white border border-zinc-700 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all duration-300 shadow-sm">
-                                            Forward <Send className="w-3 h-3" />
+                                            Trigger Alert <Send className="w-3 h-3" />
                                         </button>
                                     </div>
                                 </div>
