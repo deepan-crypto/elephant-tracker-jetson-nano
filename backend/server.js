@@ -168,49 +168,49 @@ const TelemetrySchema = new mongoose.Schema({
 const Telemetry = mongoose.model('Telemetry', TelemetrySchema);
 
 // POST endpoint to receive Jetson Orin Nano telemetry
-app.post('/api/telemetry', async (req, res) => {
-    try {
-        const { timestamp, gps_location, hazards, image_stream } = req.body;
+app.post('/api/telemetry', (req, res) => {
+    const { timestamp, gps_location, hazards, image_stream } = req.body;
 
-        // Validate payload
-        if (!timestamp || !gps_location || !hazards || !image_stream) {
-            return res.status(400).json({
-                error: 'Missing required fields: timestamp, gps_location, hazards, image_stream'
-            });
-        }
-
-        console.log(`\n📹 [TELEMETRY RECEIVED] Time: ${timestamp} | Elephants Detected: ${hazards.length}`);
-        for (const hazard of hazards) {
-            console.log(`   🐘 ${hazard.name} (Confidence: ${(hazard.confidence * 100).toFixed(2)}%)`);
-        }
-
-        // Save to MongoDB for historical tracking
-        const telemetryEntry = new Telemetry({
-            timestamp,
-            gps_location,
-            hazards,
-            image_stream
+    // Validate payload
+    if (!timestamp || !gps_location || !hazards || !image_stream) {
+        return res.status(400).json({
+            error: 'Missing required fields: timestamp, gps_location, hazards, image_stream'
         });
-        await telemetryEntry.save();
-
-        // Broadcast to all connected WebSocket clients in real-time
-        io.emit('telemetry-update', {
-            timestamp,
-            gps_location,
-            hazards,
-            image_stream,
-            receivedAt: new Date().toISOString()
-        });
-
-        res.json({
-            success: true,
-            message: 'Telemetry received and broadcasted',
-            hazardCount: hazards.length
-        });
-    } catch (err) {
-        console.error('❌ [TELEMETRY ERROR]:', err.message);
-        res.status(500).json({ error: 'Failed to process telemetry', details: err.message });
     }
+
+    console.log(`\n📹 [TELEMETRY RECEIVED] Time: ${timestamp} | Elephants Detected: ${hazards.length}`);
+    for (const hazard of hazards) {
+        console.log(`   🐘 ${hazard.name} (Confidence: ${(hazard.confidence * 100).toFixed(2)}%)`);
+    }
+
+    // ── STEP 1: Broadcast IMMEDIATELY to all WebSocket clients ──────────────
+    // This runs BEFORE the DB write so the frontend ALWAYS gets the live feed
+    // even when MongoDB is slow or offline (Render free tier timeout issue).
+    const payload = {
+        timestamp,
+        gps_location,
+        hazards,
+        image_stream,
+        receivedAt: new Date().toISOString()
+    };
+    io.emit('telemetry-update', payload);
+
+    // ── STEP 2: Respond to Jetson immediately ────────────────────────────────
+    res.json({
+        success: true,
+        message: 'Telemetry received and broadcasted',
+        hazardCount: hazards.length
+    });
+
+    // ── STEP 3: Save to MongoDB in the background (fire-and-forget) ─────────
+    // Uses setImmediate so it runs after the response is sent.
+    // A MongoDB timeout here will NEVER block or crash the socket broadcast.
+    setImmediate(() => {
+        new Telemetry({ timestamp, gps_location, hazards, image_stream })
+            .save()
+            .then(() => { /* saved ok */ })
+            .catch(err => console.warn('⚠️  [TELEMETRY DB SAVE FAILED] (non-fatal):', err.message));
+    });
 });
 
 // GET endpoint to retrieve recent telemetry data
@@ -252,13 +252,19 @@ io.on('connection', (socket) => {
 
     // Handle custom events from frontend
     socket.on('request-latest-telemetry', async () => {
+        // Only attempt DB query if Mongoose is actually connected (state 1 = connected)
+        // Skips the query entirely when MongoDB is offline → avoids 10-second hang in logs
+        if (mongoose.connection.readyState !== 1) {
+            console.warn('⚠️  [WS] Skipping latest-telemetry query — MongoDB not connected');
+            return;
+        }
         try {
             const latestTelemetry = await Telemetry.findOne().sort({ createdAt: -1 });
             if (latestTelemetry) {
                 socket.emit('latest-telemetry', latestTelemetry);
             }
         } catch (err) {
-            console.error('Error fetching latest telemetry:', err);
+            console.warn('⚠️  [WS] latest-telemetry query failed (non-fatal):', err.message);
         }
     });
 

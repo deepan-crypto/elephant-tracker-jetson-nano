@@ -20,12 +20,18 @@ sys.path.append('../backend')  # Add backend folder to path for import
 from rail_rakshak_uploader import TelemetryUploader
 
 # ─── CONFIGURATION ───────────────────────────────────────────────────────────
-BACKEND_URL  = "http://localhost:5000/api/telemetry"  # Local dev server (change for production)
+# ⚠️  IMPORTANT: Replace the URL below with your actual Render backend URL.
+#    Find it in: Render Dashboard → Your Service → top of the page.
+#    Format: https://<your-service-name>.onrender.com/api/telemetry
+BACKEND_URL  = "https://YOUR-SERVICE-NAME.onrender.com/api/telemetry"
+
 MODEL_PATH   = "best.pt"          # Path to your trained YOLOv5 weights (elephant model)
 CAMERA_INDEX = 0                  # 0 = first camera (CSI or USB)
 GPS_LAT      = 12.2958            # Mudumalai Wildlife Sanctuary coordinates
 GPS_LON      = 76.6394
-SEND_EVERY_N = 1                  # 1 = stream every frame; 2 = every 2nd frame, etc.
+# Send every 5th frame (~6fps at 30fps camera) to reduce Render free-tier load.
+# Lower = more real-time but more bandwidth; 1 = every frame (max bandwidth).
+SEND_EVERY_N = 5
 JPEG_QUALITY = 65                 # Lower = smaller payload, less bandwidth used
 # ─────────────────────────────────────────────────────────────────────────────
 
