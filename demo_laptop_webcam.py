@@ -27,12 +27,13 @@ import requests
 from datetime import datetime
 
 # ─── CONFIG — ONLY EDIT THESE ────────────────────────────────────────────────
-BACKEND_URL  = "http://localhost:5000/api/telemetry"  # Local development server
+# ⚠️  Replace with your actual Render backend URL (Render Dashboard → your service → URL at top)
+BACKEND_URL  = "https://elephant-tracker-jetson-nano.onrender.com/api/telemetry"
 HEALTH_URL   = BACKEND_URL.replace("/api/telemetry", "/health")
 GPS_LAT      = 12.2958   # Mudumalai Wildlife Sanctuary coordinates
 GPS_LON      = 76.6394
 CAMERA_INDEX = 0         # 0 = built-in webcam; try 1 if it doesn't open
-SEND_EVERY_N = 2         # send every 2nd frame (saves bandwidth on wifi)
+SEND_EVERY_N = 2         # send EVERY 2nd frame — ALWAYS, even with no detection
 JPEG_QUALITY = 60        # 0-100, lower = smaller payload
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -95,7 +96,7 @@ def main():
     if "your-backend" in BACKEND_URL:
         print("\n⚠️  ERROR: You haven't set BACKEND_URL yet!")
         print("   Edit demo_laptop_webcam.py and replace:")
-        print('   BACKEND_URL = "https://your-backend.onrender.com/api/telemetry"')
+        print('   BACKEND_URL = "https://elephant-tracker-jetson-nano.onrender.com/api/telemetry"')
         print("   with your actual Render backend URL.\n")
         sys.exit(1)
 
@@ -150,7 +151,8 @@ def main():
                     "ymax": cy + h // 2
                 }]
 
-            # ── Send to backend every Nth frame ──
+            # ── Send to backend every Nth frame — ALWAYS, whether or not elephant detected ──
+            # hazards = [] when nothing is detected; the backend still broadcasts the live image.
             if frame_count % SEND_EVERY_N == 0:
                 ok, status = send_frame(frame, hazards)
                 if ok:
