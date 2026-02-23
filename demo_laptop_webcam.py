@@ -24,7 +24,44 @@ import time
 import math
 import base64
 import requests
+import threading
 from datetime import datetime
+
+# ── Bee-buzz sound ────────────────────────────────────────────────────────────
+try:
+    import winsound
+    _HAS_WINSOUND = True
+except ImportError:
+    _HAS_WINSOUND = False
+
+_buzz_stop_event = threading.Event()
+_buzz_thread: threading.Thread | None = None
+
+def _buzz_loop():
+    """Continuously play a bee-buzz tone until _buzz_stop_event is set."""
+    while not _buzz_stop_event.is_set():
+        if _HAS_WINSOUND:
+            # 220 Hz for 120 ms → mimics a bee buzz
+            winsound.Beep(220, 120)
+        else:
+            # Fallback: print bell character on Linux/Mac
+            sys.stdout.write('\a')
+            sys.stdout.flush()
+            time.sleep(0.12)
+
+def start_buzz():
+    """Start the bee-buzz sound in a background thread (idempotent)."""
+    global _buzz_thread
+    if _buzz_thread is not None and _buzz_thread.is_alive():
+        return  # already buzzing
+    _buzz_stop_event.clear()
+    _buzz_thread = threading.Thread(target=_buzz_loop, daemon=True)
+    _buzz_thread.start()
+
+def stop_buzz():
+    """Stop the bee-buzz sound."""
+    _buzz_stop_event.set()
+# ─────────────────────────────────────────────────────────────────────────────
 
 # ─── CONFIG — ONLY EDIT THESE ────────────────────────────────────────────────
 # ⚠️  Replace with your actual Render backend URL (Render Dashboard → your service → URL at top)
@@ -150,6 +187,9 @@ def main():
                     "xmax": cx + w // 2,
                     "ymax": cy + h // 2
                 }]
+                start_buzz()   # 🐝 play bee buzz while elephant is detected
+            else:
+                stop_buzz()    # 🔇 silence when no elephant
 
             # ── Send to backend every Nth frame — ALWAYS, whether or not elephant detected ──
             # hazards = [] when nothing is detected; the backend still broadcasts the live image.
@@ -190,6 +230,7 @@ def main():
         print("\n🛑 Interrupted.")
 
     finally:
+        stop_buzz()  # ensure buzz is silenced on exit
         cap.release()
         cv2.destroyAllWindows()
         print(f"\n📊 Stats: {frame_count} frames | {sent_count} sent | {error_count} errors")
