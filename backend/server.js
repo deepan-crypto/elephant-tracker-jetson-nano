@@ -66,14 +66,52 @@ app.get('/api/ping', (_req, res) => {
     res.json({ pong: true, time: new Date().toISOString() });
 });
 
+// ── DB readiness helper ─────────────────────────────────────────────────────
+// Returns true only when Mongoose has an active connection (state 1 = connected).
+// Use this before every DB query so routes short-circuit instantly instead of
+// hanging for 10 s waiting for a buffer that never flushes.
+const dbReady = () => mongoose.connection.readyState === 1;
+
+// Middleware: respond with 503 immediately if DB is offline
+const requireDb = (_req, res, next) => {
+    if (!dbReady()) {
+        return res.status(503).json({ error: 'Database unavailable — try again shortly' });
+    }
+    next();
+};
+
 // Sanitize MONGO_URI — strip empty query params like &appName= that Atlas sometimes includes
 const rawMongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/eletrack-ai';
 const MONGO_URI = rawMongoUri.replace(/([&?])[^=&]+=[&$]/g, '$1').replace(/[?&]$/, '');
 
-// MongoDB Connection
-mongoose.connect(MONGO_URI)
-    .then(() => console.log('✅ MongoDB Connected'))
-    .catch(err => console.error('❌ MongoDB Connection Error:', err.message));
+// ── Mongoose global settings ────────────────────────────────────────────────
+// bufferCommands: false  → operations throw IMMEDIATELY when DB is offline
+//                          instead of buffering for 10 s then timing out.
+//                          This eliminates the "buffering timed out" spam.
+mongoose.set('bufferCommands', false);
+
+// MongoDB Connection with resilient options
+const MONGO_OPTS = {
+    serverSelectionTimeoutMS: 5000,   // Give up selecting a server after 5 s
+    socketTimeoutMS: 45000,           // Close idle sockets after 45 s
+    connectTimeoutMS: 10000,          // TCP connect timeout
+    heartbeatFrequencyMS: 10000,      // Check server health every 10 s
+};
+
+function connectMongo() {
+    mongoose.connect(MONGO_URI, MONGO_OPTS)
+        .then(() => console.log('✅ MongoDB Connected'))
+        .catch(err => console.error('❌ MongoDB Connection Error:', err.message));
+}
+
+connectMongo();
+
+// Auto-reconnect: if the connection drops, retry after 15 s
+mongoose.connection.on('disconnected', () => {
+    console.warn('⚠️  MongoDB disconnected — retrying in 15 s...');
+    setTimeout(connectMongo, 15000);
+});
+mongoose.connection.on('reconnected', () => console.log('✅ MongoDB Reconnected'));
 
 // Login Log Schema
 const LoginLogSchema = new mongoose.Schema({
@@ -136,7 +174,7 @@ const verifyToken = (req, res, next) => {
 };
 
 // Protected Logs Route
-app.get('/api/logs', verifyToken, async (req, res) => {
+app.get('/api/logs', verifyToken, requireDb, async (req, res) => {
     try {
         const logs = await LoginLog.find().sort({ timestamp: -1 }).limit(20);
         res.json(logs);
@@ -296,7 +334,7 @@ app.post('/api/telemetry', (req, res) => {
 });
 
 // GET endpoint to retrieve recent telemetry data
-app.get('/api/telemetry/recent', verifyToken, async (req, res) => {
+app.get('/api/telemetry/recent', verifyToken, requireDb, async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 10;
         const telemetryData = await Telemetry.find()
@@ -391,7 +429,7 @@ app.get('/api/rf-status', (_req, res) => {
 });
 
 // GET /api/rf-logs — RF scan history (JWT protected)
-app.get('/api/rf-logs', verifyToken, async (req, res) => {
+app.get('/api/rf-logs', verifyToken, requireDb, async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 50;
         const logs = await RFLog.find().sort({ createdAt: -1 }).limit(Math.min(limit, 200));
@@ -407,7 +445,7 @@ app.get('/api/threat-status', (_req, res) => {
 });
 
 // GET /api/threat-logs — threat history (JWT protected)
-app.get('/api/threat-logs', verifyToken, async (req, res) => {
+app.get('/api/threat-logs', verifyToken, requireDb, async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 50;
         const logs = await ThreatLog.find().sort({ createdAt: -1 }).limit(Math.min(limit, 200));
@@ -418,7 +456,7 @@ app.get('/api/threat-logs', verifyToken, async (req, res) => {
 });
 
 // GET /api/elephant-logs — elephant detection history (JWT protected)
-app.get('/api/elephant-logs', verifyToken, async (req, res) => {
+app.get('/api/elephant-logs', verifyToken, requireDb, async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 50;
         const logs = await ElephantLog.find().sort({ createdAt: -1 }).limit(Math.min(limit, 100));
@@ -429,7 +467,7 @@ app.get('/api/elephant-logs', verifyToken, async (req, res) => {
 });
 
 // GET endpoint to retrieve telemetry with hazards only
-app.get('/api/telemetry/hazards', verifyToken, async (req, res) => {
+app.get('/api/telemetry/hazards', verifyToken, requireDb, async (req, res) => {
     try {
         const hazardData = await Telemetry.find({ hazards: { $ne: [] } })
             .sort({ createdAt: -1 })
