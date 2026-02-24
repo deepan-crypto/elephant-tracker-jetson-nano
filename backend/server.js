@@ -35,13 +35,15 @@ const io = new SocketIOServer(httpServer, {
 
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
+const RF_SERVICE_URL = (process.env.RF_SERVICE_URL || 'http://localhost:8001').replace(/\/$/, '');
+const RF_THRESHOLD_DBM = parseFloat(process.env.RF_THRESHOLD_DBM || '-40');
 
 // Middleware
 app.use(cors({
-    origin: function(origin, callback) {
+    origin: function (origin, callback) {
         // Allow requests with no origin (mobile apps, curl, etc.)
         if (!origin) return callback(null, true);
-        
+
         // Check if origin is in allowed list
         if (ALLOWED_ORIGINS === true || ALLOWED_ORIGINS.includes(origin)) {
             callback(null, true);
@@ -143,6 +145,86 @@ app.get('/api/logs', verifyToken, async (req, res) => {
     }
 });
 
+// ==================== RF + THREAT MONITORING SCHEMAS ====================
+
+// RF Scan Log Schema
+const RFLogSchema = new mongoose.Schema({
+    timestamp: String,
+    frequency_hz: Number,
+    span_hz: Number,
+    max_power_dbm: Number,
+    threshold_dbm: Number,
+    raw_trace_peak: Number,
+    status: { type: String, enum: ['SAFE', 'INTRUSION'], default: 'SAFE' },
+    scan_duration_ms: Number,
+    error: String,
+    createdAt: { type: Date, default: Date.now, expires: 259200 }  // TTL 3 days
+});
+const RFLog = mongoose.model('RFLog', RFLogSchema);
+
+// Fused Threat Log Schema
+const ThreatLogSchema = new mongoose.Schema({
+    timestamp: String,
+    elephant_detected: Boolean,
+    rf_status: { type: String, enum: ['SAFE', 'INTRUSION'] },
+    threat_level: { type: String, enum: ['SAFE', 'WILDLIFE_ALERT', 'HUMAN_INTRUSION', 'CRITICAL_ALERT'] },
+    location: { lat: Number, lon: Number },
+    acknowledged: { type: Boolean, default: false },
+    acknowledged_by: String,
+    createdAt: { type: Date, default: Date.now, expires: 2592000 } // TTL 30 days
+});
+const ThreatLog = mongoose.model('ThreatLog', ThreatLogSchema);
+
+// Elephant Detection Log Schema (dedicated collection)
+const ElephantLogSchema = new mongoose.Schema({
+    timestamp: String,
+    source: { type: String, default: 'jetson' },
+    elephant_count: Number,
+    confidence_avg: Number,
+    location: { lat: Number, lon: Number },
+    image_snapshot: String,
+    createdAt: { type: Date, default: Date.now, expires: 604800 } // TTL 7 days
+});
+const ElephantLog = mongoose.model('ElephantLog', ElephantLogSchema);
+
+// In-memory latest RF state (for low-latency /api/rf-status)
+let latestRFReading = null;
+let latestThreatState = {
+    threat_level: 'SAFE',
+    elephant_detected: false,
+    rf_status: 'SAFE',
+    color: '#14532d',
+    priority: 0,
+    description: 'System initializing...',
+    timestamp: new Date().toISOString()
+};
+
+// Threat fusion logic (mirrors Python threat_fusion.py)
+function fuseThreatLevel(elephantDetected, rfStatus) {
+    if (elephantDetected && rfStatus === 'INTRUSION') return 'CRITICAL_ALERT';
+    if (elephantDetected && rfStatus === 'SAFE') return 'WILDLIFE_ALERT';
+    if (!elephantDetected && rfStatus === 'INTRUSION') return 'HUMAN_INTRUSION';
+    return 'SAFE';
+}
+
+const THREAT_COLORS = {
+    'SAFE': '#14532d',
+    'WILDLIFE_ALERT': '#92400e',
+    'HUMAN_INTRUSION': '#9a3412',
+    'CRITICAL_ALERT': '#7f1d1d'
+};
+
+const THREAT_PRIORITY = {
+    'SAFE': 0, 'WILDLIFE_ALERT': 1, 'HUMAN_INTRUSION': 2, 'CRITICAL_ALERT': 3
+};
+
+const THREAT_DESCRIPTIONS = {
+    'SAFE': 'All systems normal. No elephant or RF intrusion detected.',
+    'WILDLIFE_ALERT': '🐘 Elephant detected near railway border. RF channel is clear.',
+    'HUMAN_INTRUSION': '📡 Suspicious RF signal detected. Possible illegal communication device.',
+    'CRITICAL_ALERT': '🚨 CRITICAL: Elephant present AND unauthorized RF signal detected — possible poacher activity!'
+};
+
 // ==================== TELEMETRY & EDGE AI ROUTES ====================
 
 // Telemetry Data Schema
@@ -226,6 +308,126 @@ app.get('/api/telemetry/recent', verifyToken, async (req, res) => {
     }
 });
 
+// ==================== RF MONITORING ROUTES ====================
+
+// Internal ingest — called by Python RF monitor service every scan interval
+// Updates in-memory state, logs to DB, and broadcasts to all WebSocket clients
+app.post('/api/rf-ingest', async (req, res) => {
+    const {
+        status, max_power_dbm, threshold_dbm, center_freq_hz,
+        span_hz, timestamp, scan_duration_ms, error,
+        elephant_detected = false, location = null
+    } = req.body;
+
+    // Update in-memory RF state
+    latestRFReading = {
+        status, max_power_dbm, threshold_dbm, center_freq_hz,
+        span_hz, timestamp, scan_duration_ms, error,
+        receivedAt: new Date().toISOString()
+    };
+
+    // Fuse threat level
+    const rfStatus = status || 'SAFE';
+    const threat_level = fuseThreatLevel(elephant_detected, rfStatus);
+    latestThreatState = {
+        threat_level,
+        elephant_detected,
+        rf_status: rfStatus,
+        color: THREAT_COLORS[threat_level],
+        priority: THREAT_PRIORITY[threat_level],
+        description: THREAT_DESCRIPTIONS[threat_level],
+        timestamp: timestamp || new Date().toISOString()
+    };
+
+    // Broadcast to all connected WebSocket clients immediately
+    io.emit('rf-update', {
+        rf: latestRFReading,
+        threat: latestThreatState
+    });
+
+    if (rfStatus === 'INTRUSION') {
+        console.log(`📡 [RF INTRUSION] Power: ${max_power_dbm} dBm | Threat: ${threat_level}`);
+    }
+
+    // Respond immediately
+    res.json({ received: true, threat_level, timestamp });
+
+    // Log to MongoDB in background (non-blocking)
+    setImmediate(async () => {
+        try {
+            await new RFLog({
+                timestamp, frequency_hz: center_freq_hz, span_hz,
+                max_power_dbm, threshold_dbm, raw_trace_peak: max_power_dbm,
+                status: rfStatus, scan_duration_ms, error
+            }).save();
+        } catch (e) {
+            console.warn('⚠️  [RF] DB log failed:', e.message);
+        }
+        // Log threat changes (only INTRUSION or WARNING levels)
+        if (threat_level !== 'SAFE') {
+            try {
+                await new ThreatLog({
+                    timestamp, elephant_detected, rf_status: rfStatus,
+                    threat_level, location
+                }).save();
+            } catch (e) {
+                console.warn('⚠️  [THREAT] DB log failed:', e.message);
+            }
+        }
+    });
+});
+
+// GET /api/rf-status — current RF reading (open, no auth)
+app.get('/api/rf-status', (_req, res) => {
+    if (!latestRFReading) {
+        return res.json({
+            status: 'UNKNOWN',
+            message: 'No RF scan data yet. RF service may be initializing.',
+            threshold_dbm: RF_THRESHOLD_DBM,
+            service_url: RF_SERVICE_URL
+        });
+    }
+    res.json(latestRFReading);
+});
+
+// GET /api/rf-logs — RF scan history (JWT protected)
+app.get('/api/rf-logs', verifyToken, async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 50;
+        const logs = await RFLog.find().sort({ createdAt: -1 }).limit(Math.min(limit, 200));
+        res.json({ count: logs.length, logs });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch RF logs' });
+    }
+});
+
+// GET /api/threat-status — current fused threat level (open, no auth)
+app.get('/api/threat-status', (_req, res) => {
+    res.json(latestThreatState);
+});
+
+// GET /api/threat-logs — threat history (JWT protected)
+app.get('/api/threat-logs', verifyToken, async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 50;
+        const logs = await ThreatLog.find().sort({ createdAt: -1 }).limit(Math.min(limit, 200));
+        res.json({ count: logs.length, logs });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch threat logs' });
+    }
+});
+
+// GET /api/elephant-logs — elephant detection history (JWT protected)
+app.get('/api/elephant-logs', verifyToken, async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 50;
+        const logs = await ElephantLog.find().sort({ createdAt: -1 }).limit(Math.min(limit, 100));
+        res.json({ count: logs.length, logs });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch elephant logs' });
+    }
+});
+
 // GET endpoint to retrieve telemetry with hazards only
 app.get('/api/telemetry/hazards', verifyToken, async (req, res) => {
     try {
@@ -280,11 +482,14 @@ io.on('connection', (socket) => {
 // ==================== SERVER STARTUP ====================
 
 httpServer.listen(PORT, () => {
-    console.log(`� EleTrack AI Server running on http://localhost:${PORT}`);
+    console.log(`🚀 EleTrack AI Hybrid Surveillance Server running on http://localhost:${PORT}`);
     console.log(`🔒 JWT Authentication Enabled`);
     console.log(`📡 WebSocket (Socket.io) Server running on ws://localhost:${PORT}`);
-    console.log(`📸 Telemetry endpoint: POST /api/telemetry`);
+    console.log(`📸 Telemetry endpoint:   POST /api/telemetry`);
+    console.log(`📻 RF ingest endpoint:   POST /api/rf-ingest`);
+    console.log(`🎯 Threat level:         GET  /api/threat-status`);
     console.log(`📊 Max payload size: 10MB`);
+    console.log(`🔗 RF Python service: ${RF_SERVICE_URL}`);
     console.log(`\n📋 Default Credentials:`);
     Object.keys(CREDENTIALS).forEach(user => {
         console.log(`   - ${user} : ${CREDENTIALS[user]}`);

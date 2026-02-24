@@ -1,0 +1,9 @@
+pyvisa>=1.13.0
+pyvisa-py>=0.7.0
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+pymongo>=4.6.0
+python-dotenv>=1.0.0
+numpy>=1.26.0
+httpx>=0.27.0
+PyJWT>=2.8.0
