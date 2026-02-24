@@ -1,0 +1,1 @@
+python -c "import pyvisa; m=pyvisa.ResourceManager(); print(m.list_resources())"
