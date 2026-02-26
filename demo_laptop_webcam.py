@@ -135,7 +135,6 @@ def main():
     frame_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     print(f"✅ Webcam opened: {frame_w}×{frame_h}")
     print("\n🚀 Streaming started. Open your Vercel dashboard and log in.")
-    print("   Fake elephant detection fires every 5 seconds to test alerts.")
     print("   Press  Q  in the preview window to quit.\n")
 
     frame_count  = 0
@@ -153,11 +152,8 @@ def main():
             frame_count += 1
             elapsed = time.time() - start_time
 
-            # ── Fake detection: active for 2s out of every 5s cycle ──
-            # 🔇 silence when no elephant
-
-            # ── Send to backend every Nth frame — ALWAYS, whether or not elephant detected ──
-            # hazards = [] when nothing is detected; the backend still broadcasts the live image.
+            # ── Send to backend every Nth frame ──
+            hazards = []
             if frame_count % SEND_EVERY_N == 0:
                 ok, status = send_frame(frame, hazards)
                 if ok:
@@ -168,15 +164,6 @@ def main():
 
             # ── Draw local preview ──
             display = frame.copy()
-            if fake_active:
-                h_ = hazards[0]
-                cv2.rectangle(display,
-                              (h_["xmin"], h_["ymin"]),
-                              (h_["xmax"], h_["ymax"]),
-                              (0, 0, 255), 2)
-                cv2.putText(display, "ELEPHANT 91%",
-                            (h_["xmin"], h_["ymin"] - 8),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 0, 255), 2)
 
             bar = (f"Frame {frame_count} | Sent {sent_count} | "
                    f"Err {error_count} | {elapsed:.0f}s")
@@ -184,8 +171,7 @@ def main():
             cv2.putText(display, bar, (6, 19),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.46, (200, 200, 200), 1)
 
-            dot_color = (0, 0, 255) if fake_active else (0, 220, 0)
-            cv2.circle(display, (frame_w - 16, 14), 7, dot_color, -1)
+            cv2.circle(display, (frame_w - 16, 14), 7, (0, 220, 0), -1)
 
             cv2.imshow("EleTrack AI — Webcam Demo (Q to quit)", display)
             if cv2.waitKey(1) & 0xFF == ord('q'):
