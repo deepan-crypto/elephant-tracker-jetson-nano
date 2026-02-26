@@ -1,22 +1,3 @@
-"""
-demo_laptop_webcam.py — EleTrack AI Live Feed Demo (Laptop Webcam)
-===================================================================
-Fully self-contained demo — no YOLOv5, no PyTorch, no TelemetryUploader needed.
-Just OpenCV + requests.
-
-Requirements:
-    pip install opencv-python requests
-
-Run:
-    python demo_laptop_webcam.py
-
-What it does:
-  1. Wakes the Render backend (handles Render free-tier cold-start delay)
-  2. Opens your laptop webcam (camera index 0)
-  3. Sends every Nth frame as a base64 JPEG to your backend
-  4. Simulates a fake "Elephant" detection every 5 seconds
-  5. Shows a local preview window — press Q to quit
-"""
 
 import cv2
 import sys
@@ -173,23 +154,7 @@ def main():
             elapsed = time.time() - start_time
 
             # ── Fake detection: active for 2s out of every 5s cycle ──
-            fake_active = math.floor(elapsed) % 5 < 2
-            hazards = []
-            if fake_active:
-                cx, cy = frame_w // 2, frame_h // 2
-                w, h   = 200, 120
-                hazards = [{
-                    "class":      0,
-                    "name":       "Elephant",
-                    "confidence": 0.91,
-                    "xmin": cx - w // 2,
-                    "ymin": cy - h // 2,
-                    "xmax": cx + w // 2,
-                    "ymax": cy + h // 2
-                }]
-                start_buzz()   # 🐝 play bee buzz while elephant is detected
-            else:
-                stop_buzz()    # 🔇 silence when no elephant
+            # 🔇 silence when no elephant
 
             # ── Send to backend every Nth frame — ALWAYS, whether or not elephant detected ──
             # hazards = [] when nothing is detected; the backend still broadcasts the live image.
