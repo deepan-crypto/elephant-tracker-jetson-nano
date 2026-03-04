@@ -16,9 +16,7 @@ const FRONTEND_URL = (process.env.FRONTEND_URL || '').replace(/\/$/, '');
 // If FRONTEND_URL is not set we fall back to allowing all origins (safe for free-tier demos)
 const ALLOWED_ORIGINS = FRONTEND_URL
     ? [
-        'http://localhost:5173',
-        'http://localhost:3000',
-        FRONTEND_URL,       // e.g. https://elephant-tracker-jetson-nano.vercel.app
+               // e.g. https://elephant-tracker-jetson-nano.vercel.app
     ]
     : true;                             // Allow all when not configured
 
