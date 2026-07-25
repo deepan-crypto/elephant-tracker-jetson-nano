@@ -16,7 +16,10 @@ const FRONTEND_URL = (process.env.FRONTEND_URL || '').replace(/\/$/, '');
 // If FRONTEND_URL is not set we fall back to allowing all origins (safe for free-tier demos)
 const ALLOWED_ORIGINS = FRONTEND_URL
     ? [
-               // e.g. https://elephant-tracker-jetson-nano.vercel.app
+        FRONTEND_URL,                                    
+       'https://elephant-tracker-jetson-nano.vercel.app',   
+        'http://localhost:5173',                         // Vite dev server
+        'http://localhost:3000',                         // Alt dev port
     ]
     : true;                             // Allow all when not configured
 
